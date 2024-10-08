@@ -25,7 +25,9 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [DACL Service](#dacl-service)
     - [Scheduled Tasks (pinger)](#scheduled-tasks-pinger)
   - [Verify Local Admin Access](#verify-local-admin-access)
-
+  - [Defense Evasion](#defense-evasion)
+    - [Folder Exclusion in Windows Defender UI](#folder-exclusion-in-windows-defender-ui)
+    - [Folder Exclusion in Windows Defender PowerShell](#folder-exclusion-in-windows-defender-powershell)
 
 ## Task Overview
 
@@ -747,3 +749,63 @@ The command completed successfully.
 
 This confirms that the attack has added the `helpdesk` account to the Administrators group, giving it full control of the system.
 
+## Defense Evasion
+
+Avoid being detected by security tools like antivirus programs by exclude folders from being scanned by Windows Defender, using either the graphical interface (Windows Security UI) or PowerShell.
+
+---
+
+### Folder Exclusion in Windows Defender UI
+
+Follow these steps to exclude a folder from Windows Defender scans using the Windows interface:
+
+1. **Open Windows Security:**
+   - Go to the **Start menu** and search for **Windows Security**.
+   - Click on **Virus & threat protection**.
+
+2. **Manage Settings:**
+   - Scroll down and click on **Manage settings** under **Virus & threat protection settings**.
+
+3. **Add Exclusions:**
+   - Scroll to **Exclusions** and click **Add or remove exclusions**.
+
+4. **Exclude a Folder:**
+   - Click **Add an exclusion**, then choose **Folder**.
+   - Select the folder you want to exclude and confirm.
+
+> **Note:** When logging into the system with the local administrator account (e.g., "helpdesk") via the Windows login screen, you must use the **"dot backslash" (`.\`)** notation to specify a local user account rather than a domain account. For example, to log in as the local "helpdesk" account, enter:  
+`.\helpdesk`. This ensures the login is processed against the local **Security Accounts Manager (SAM)** database instead of the domain's Active Directory.
+
+---
+
+### Folder Exclusion in Windows Defender PowerShell
+
+You can also exclude folders using PowerShell. Here’s how:
+
+1. **Open PowerShell as Administrator:**
+   - Right-click the **Start menu**, choose **Windows PowerShell (Admin)**.
+
+2. **Add a Folder Exclusion:**
+   - Type this command, replacing `"C:\Path\To\Your\Folder"` with the folder you want to exclude:
+
+     ```powershell
+     Add-MpPreference -ExclusionPath "C:\Path\To\Your\Folder"
+     ```
+
+3. **Check Exclusions:**
+   - To see the excluded folders, type:
+
+     ```powershell
+     Get-MpPreference | Select-Object -ExpandProperty ExclusionPath
+     ```
+
+4. **Remove a Folder Exclusion (Optional):**
+   - If you need to remove an exclusion, use this command:
+
+     ```powershell
+     Remove-MpPreference -ExclusionPath "C:\Path\To\Your\Folder"
+     ```
+
+> **Note:** There is a patch that prevents excluding the root `C:\` drive using PowerShell. However, this can be bypassed by excluding a specific folder within `C:\`, such as `C:\Temp`, as the patch only blocks exclusions ending with `C:\`, not folders inside it.
+
+---
