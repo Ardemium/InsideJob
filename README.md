@@ -845,13 +845,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use the `curl` command to download the file:
 
    ```bash
-      curl -o mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
+   curl -o mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
    ```
 
    In **PowerShell**, use `Invoke-WebRequest`:
 
    ```powershell
-      Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip" -OutFile "mimikatz.zip"
+   Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip" -OutFile "mimikatz.zip"
    ```
 
    Both commands will download the file from the specified URL and save it as `mimikatz.zip` in the current directory.
@@ -863,13 +863,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `mkdir`:
 
    ```bash
-      mkdir C:\temp\mimikatz
+   mkdir C:\temp\mimikatz
    ```
 
    In **PowerShell**, use `New-Item`:
 
    ```powershell
-      New-Item -Path "C:\temp\mimikatz" -ItemType Directory
+   New-Item -Path "C:\temp\mimikatz" -ItemType Directory
    ```
 
    After creating the folder, you can proceed to extract the archive into it.
@@ -879,13 +879,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `tar` to extract the ZIP file (this works on Windows 10 and later):
 
    ```bash
-      tar -xf mimikatz.zip -C C:\temp\mimikatz
+   tar -xf mimikatz.zip -C C:\temp\mimikatz
    ```
 
    In **PowerShell**, use `Expand-Archive` to extract the ZIP file:
 
    ```powershell
-      Expand-Archive -Path "mimikatz.zip" -DestinationPath "C:\temp\mimikatz"
+   Expand-Archive -Path "mimikatz.zip" -DestinationPath "C:\temp\mimikatz"
    ```
 
    This command extracts the contents of `mimikatz.zip` into the specified folder (`C:\temp`). Make sure to replace the path with your desired location.
@@ -901,13 +901,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `curl` to download the **Sysinternals Suite**:
 
    ```bash
-      curl -o SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
+   curl -o SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
    ```
 
    In **PowerShell**, use `Invoke-WebRequest` to download the suite:
 
    ```powershell
-      Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "SysinternalsSuite.zip"
+   Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "SysinternalsSuite.zip"
    ```
 
    Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip`.
@@ -919,13 +919,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `mkdir`:
 
    ```bash
-      mkdir C:\temp\Sysinternals
+   mkdir C:\temp\Sysinternals
    ```
 
    In **PowerShell**, use `New-Item`:
 
    ```powershell
-      New-Item -Path "C:\temp\Sysinternals" -ItemType Directory
+   New-Item -Path "C:\temp\Sysinternals" -ItemType Directory
    ```
 
 3. **Extract Sysinternals ZIP File**
@@ -933,13 +933,13 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `tar` to extract the **SysinternalsSuite.zip** file:
 
    ```bash
-      tar -xf SysinternalsSuite.zip -C C:\temp\Sysinternals
+   tar -xf SysinternalsSuite.zip -C C:\temp\Sysinternals
    ```
 
    In **PowerShell**, use `Expand-Archive` to extract the contents:
 
    ```powershell
-      Expand-Archive -Path "SysinternalsSuite.zip" -DestinationPath "C:\temp\Sysinternals"
+   Expand-Archive -Path "SysinternalsSuite.zip" -DestinationPath "C:\temp\Sysinternals"
    ```
 
    This extracts the **Sysinternals Suite** into the `C:\temp\Sysinternals` folder for further use.
