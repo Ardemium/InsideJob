@@ -1,12 +1,15 @@
 # Inside Job
 
+## Case
+
 Megacorp, a very large company, has recently acquired several SMEs (Small and Medium-sized Enterprises). Being highly risk-averse and serious about their security posture, Megacorp is conducting multiple simultaneous security assessments.
 
 - [Inside Job](#inside-job)
-  - [Task Overview](#task-overview)
-  - [Rules of Engagement](#rules-of-engagement)
-  - [Lab Environment Setup](#lab-environment-setup)
-  - [Lab Session Guidelines](#lab-session-guidelines)
+  - [Case](#case)
+    - [Task Overview](#task-overview)
+    - [Rules of Engagement](#rules-of-engagement)
+    - [Lab Environment Setup](#lab-environment-setup)
+    - [Lab Session Guidelines](#lab-session-guidelines)
   - [Reconnaissance](#reconnaissance)
     - [Initial Enumeration of the Environment](#initial-enumeration-of-the-environment)
     - [User Enumeration](#user-enumeration)
@@ -26,7 +29,7 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [DLL Hijack Service](#dll-hijack-service)
     - [DACL Service](#dacl-service)
     - [Scheduled Tasks (pinger)](#scheduled-tasks-pinger)
-  - [Verify Local Admin Access](#verify-local-admin-access)
+    - [Verify Local Admin Access](#verify-local-admin-access)
   - [Defense Evasion](#defense-evasion)
     - [Folder Exclusion in Windows Defender UI](#folder-exclusion-in-windows-defender-ui)
     - [Folder Exclusion in Windows Defender PowerShell](#folder-exclusion-in-windows-defender-powershell)
@@ -36,9 +39,9 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [Transferring Tools](#transferring-tools)
     - [Extract the Domain Admin NTLM Hash](#extract-the-domain-admin-ntlm-hash)
     - [Use Pass-the-Hash to Access the Domain Controller](#use-pass-the-hash-to-access-the-domain-controller)
-      - [Dump All Hashes from Active Directory](#dump-all-hashes-from-active-directory)
+    - [Dump All Hashes from Active Directory](#dump-all-hashes-from-active-directory)
 
-## Task Overview
+### Task Overview
 
 Your assignment is to assess the **insider threat** scenario through a red-team exercise. Your objectives are:
 
@@ -48,7 +51,7 @@ Your assignment is to assess the **insider threat** scenario through a red-team 
 
 > **Note:** There are no extra points for finishing quickly; the client expects a thorough examination of the environment.
 
-## Rules of Engagement
+### Rules of Engagement
 
 You may use any tools or techniques available, provided you adhere to the following rules:
 
@@ -61,7 +64,7 @@ You may use any tools or techniques available, provided you adhere to the follow
 
 > We do not expect perfect stealth, but actions violating these rules generate excessive noise.
 
-## Lab Environment Setup
+### Lab Environment Setup
 
 Follow these steps to start the VirtualBox lab environment:
 
@@ -81,7 +84,7 @@ Follow these steps to start the VirtualBox lab environment:
      Password: L3tm3!n
      ```
 
-## Lab Session Guidelines
+### Lab Session Guidelines
 
 Each lab session will involve extensive research and experimentation. You are encouraged to test any tools or methods you discover. However, exercise caution when using pre-built tools from online sources, as some may cause system instability. If you damage your VM, revert to the snapshot and start over.
 
@@ -787,7 +790,7 @@ We have identified a scheduled task running under an administrative account, and
 
 ---
 
-## Verify Local Admin Access
+### Verify Local Admin Access
 
 Check if the `helpdesk` user has been added with administrative privileges:
 
@@ -1279,7 +1282,7 @@ Now that we have the NTLM hash of the **Domain Admin** account (`domad`), we can
 
    If you see the directory contents, the **Pass-the-Hash** was successful, and you have administrative access to the Domain Controller.
 
-#### Dump All Hashes from Active Directory
+### Dump All Hashes from Active Directory
 
 Now that you have administrative access to the Domain Controller, run **Mimikatz** to dump all the password hashes stored in Active Directory.
 
