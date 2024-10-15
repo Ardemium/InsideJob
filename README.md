@@ -16,6 +16,8 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [Network Reconnaissance "Using Angry IP Scanner"](#network-reconnaissance-using-angry-ip-scanner)
     - [Identifying Potential Third-Party Services](#identifying-potential-third-party-services)
     - [Scheduled Tasks in "Tasks Migrated" Folder](#scheduled-tasks-in-tasks-migrated-folder)
+  - [Resource Development](#resource-development)
+    - [Get Sysinternals Suite](#get-sysinternals-suite)
   - [Privilege Escalation](#privilege-escalation)
     - [RemoteMouseService (CVE-2021-35448)](#remotemouseservice-cve-2021-35448)
     - [Unquoted Service Path](#unquoted-service-path)
@@ -30,7 +32,6 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [Folder Exclusion in Windows Defender PowerShell](#folder-exclusion-in-windows-defender-powershell)
   - [Lateral Movement](#lateral-movement)
     - [Get Mimikatz](#get-mimikatz)
-    - [Get Sysinternals Suite](#get-sysinternals-suite)
     - [Using Pass-the-Hash (PTH) Attack](#using-pass-the-hash-pth-attack)
     - [Transferring Tools](#transferring-tools)
     - [Extract the Domain Admin NTLM Hash](#extract-the-domain-admin-ntlm-hash)
@@ -282,6 +283,62 @@ Check for misconfigured scheduled tasks that can escalate privileges.
    - **Actions**: The command it runs (e.g., `pinger.bat` script).
 
 > **Note:** Knowing who created the task is important because it tells you what level of privileges the task has when it runs.
+
+---
+
+## Resource Development
+
+### Get Sysinternals Suite
+
+**Sysinternals** provides a suite of tools useful for lateral movement and system investigation.
+
+1. **Download Sysinternals ZIP File**
+
+   In **cmd**, use `curl` to download the **Sysinternals Suite** to your `Downloads` folder:
+
+   ```bash
+   curl -o Downloads\SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
+   ```
+
+   In **PowerShell**, use `Invoke-WebRequest` to download the suite:
+
+   ```powershell
+   Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "$HOME\Downloads\SysinternalsSuite.zip"
+   ```
+
+   Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip` in the `Downloads` folder.
+
+2. **Create Destination Folder** (If Needed)
+
+   If the folder for **Sysinternals** does not exist, create it before extracting:
+
+   In **cmd**, use `mkdir`:
+
+   ```bash
+   mkdir Downloads\SysinternalsSuite
+   ```
+
+   In **PowerShell**, use `New-Item`:
+
+   ```powershell
+   New-Item -Path "$HOME\Downloads\SysinternalsSuite" -ItemType Directory
+   ```
+
+3. **Extract Sysinternals ZIP File**
+
+   In **cmd**, use `tar` to extract the **SysinternalsSuite.zip** file:
+
+   ```bash
+   tar -xf Downloads\SysinternalsSuite.zip -C Downloads\SysinternalsSuite
+   ```
+
+   In **PowerShell**, use `Expand-Archive` to extract the contents:
+
+   ```powershell
+   Expand-Archive -Path "$HOME\Downloads\SysinternalsSuite.zip" -DestinationPath "$HOME\Downloads\SysinternalsSuite"
+   ```
+
+   This extracts the **Sysinternals Suite** into the `Downloads\SysinternalsSuite` folder for further use.
 
 ---
 
@@ -609,6 +666,10 @@ A vulnerable service attempts to load a missing DLL, which allows us to escalate
 
 The `daclsvc` service has improper permissions that allow unauthorized users to modify its configuration due to the **DC** permission (`Change Configuration`) being granted to the **Everyone** group.
 
+**Prerequisites:**
+
+- `accesschk.exe` utility from Sysinternals suite.
+
 **Steps:**
 
 1. **Check Permissions:**
@@ -616,20 +677,29 @@ The `daclsvc` service has improper permissions that allow unauthorized users to 
    - Run the following command to view the service's security descriptor:
 
      ```bash
-     sc sdshow daclsvc
+     acceschk.exe -uwvc "normaluser" *
      ```
 
    - Look for this specific part of the output:
 
      ```bash
-     (A;;CCDCLCSWRPWPLORC;;;WD)
+      Accesschk v6.15 - Reports effective permissions for securable objects
+      Copyright (C) 2006-2022 Mark Russinovich
+      Sysinternals - www.sysinternals.com
+      
+      RW daclsvc
+              SERVICE_QUERY_STATUS
+              SERVICE_QUERY_CONFIG
+              SERVICE_CHANGE_CONFIG
+              SERVICE_INTERROGATE
+              SERVICE_ENUMERATE_DEPENDENTS
+              SERVICE_START
+              SERVICE_STOP
+              READ_CONTROL
      ```
 
-   - Focus on **`CCDCLCSWRPWPLORC`**, where:
-     - **DC** stands for **Change Configuration**.
-     - **WD** represents the **Everyone** group (World).
-
-   The presence of `DC` in this string indicates that **Everyone** has permission to change the service configuration, which is a serious security risk.
+   - **Interpreting the results:**  
+     The `SERVICE_CHANGE_CONFIG` permission means that any user, including the "normaluser" in this case, has the right to modify the service's configuration, including its binary path. This exposes the service to exploitation, allowing an attacker to run arbitrary commands with the service's privileges.
 
 2. **Modify Service Path:**
 
@@ -889,60 +959,6 @@ download, extract, and prepare **mimikatz**
    ```
 
    This command extracts the contents of `mimikatz.zip` into the specified folder (`C:\temp`). Make sure to replace the path with your desired location.
-
----
-
-### Get Sysinternals Suite
-
-**Sysinternals** provides a suite of tools useful for lateral movement and system investigation.
-
-1. **Download Sysinternals ZIP File**
-
-   In **cmd**, use `curl` to download the **Sysinternals Suite**:
-
-   ```bash
-   curl -o SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
-   ```
-
-   In **PowerShell**, use `Invoke-WebRequest` to download the suite:
-
-   ```powershell
-   Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "SysinternalsSuite.zip"
-   ```
-
-   Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip`.
-
-2. **Create Destination Folder** (If Needed)
-
-   If the folder for **Sysinternals** does not exist, create it before extracting:
-
-   In **cmd**, use `mkdir`:
-
-   ```bash
-   mkdir C:\temp\Sysinternals
-   ```
-
-   In **PowerShell**, use `New-Item`:
-
-   ```powershell
-   New-Item -Path "C:\temp\Sysinternals" -ItemType Directory
-   ```
-
-3. **Extract Sysinternals ZIP File**
-
-   In **cmd**, use `tar` to extract the **SysinternalsSuite.zip** file:
-
-   ```bash
-   tar -xf SysinternalsSuite.zip -C C:\temp\Sysinternals
-   ```
-
-   In **PowerShell**, use `Expand-Archive` to extract the contents:
-
-   ```powershell
-   Expand-Archive -Path "SysinternalsSuite.zip" -DestinationPath "C:\temp\Sysinternals"
-   ```
-
-   This extracts the **Sysinternals Suite** into the `C:\temp\Sysinternals` folder for further use.
 
 ---
 
