@@ -496,6 +496,8 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
 
 We can change the service's executable path in the registry.
 
+> **Tip:** Try running the `ModifyServiceImagePath.bat` util!
+
 **GUI Steps:**
 
 1. **Open Registry Editor:**
