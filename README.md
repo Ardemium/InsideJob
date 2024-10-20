@@ -785,7 +785,7 @@ The `daclsvc` service has improper permissions that allow unauthorized users to 
    - Run the following command to view the service's security descriptor:
 
      ```bash
-     acceschk.exe -uwvc "normaluser" *
+     %USERPROFILE%\SysinternalsSuite\accesschk.exe -uwvc "normaluser" *
      ```
 
    - Look for this specific part of the output:
