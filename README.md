@@ -271,7 +271,7 @@ By following these steps, we identified several non-default services that lack d
 
 #### Through CMD
 
-Services running from outside the Windows System32 directory are more likely to be third-party or non-standard, which could pose security risks. Use the following command to identify them:
+Services running from outside the Windows System32 directory are more likely to be third-party or non-standard. Use the following command to identify them:
 
 ```bash
 wmic service get name,displayname,pathname | findstr /i /v "C:\\Windows\\System32\\"
