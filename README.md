@@ -1,9 +1,13 @@
 # Inside Job
 
 ★★★
+
 Please Star My Repository
+
 ★★★
+
 Hi! If you find this project helpful, please consider giving it a star. Your support is appreciated!
+
 ★★★
 
 ![Inside Job](.assets/InsideJob.jpg)
