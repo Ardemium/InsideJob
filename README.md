@@ -1,5 +1,19 @@
 # Inside Job
 
+Please Star My Repository
+        .
+       ,O,
+      ,OOO,
+'oooooOOOOOooooo'
+  `OOOOOOOOOOO`
+    `OOOOOOO`
+    OOOO'OOOO
+   OOO'   'OOO
+  O'         'O
+Hi! If you find this project helpful, please consider giving it a star. Your support is appreciated!
+
+![Inside Job](.assets/InsideJob.jpg)
+
 ## Case
 
 Megacorp, a very large company, has recently acquired several SMEs (Small and Medium-sized Enterprises). Being highly risk-averse and serious about their security posture, Megacorp is conducting multiple simultaneous security assessments.
