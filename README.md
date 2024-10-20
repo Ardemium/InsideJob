@@ -26,6 +26,8 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [Identifying Non-Default Applications](#identifying-non-default-applications)
     - [Network Reconnaissance "Using Angry IP Scanner"](#network-reconnaissance-using-angry-ip-scanner)
     - [Identifying Potential Third-Party Services](#identifying-potential-third-party-services)
+      - [Through the UI](#through-the-ui)
+      - [Through CMD](#through-cmd)
     - [Scheduled Tasks in "Tasks Migrated" Folder](#scheduled-tasks-in-tasks-migrated-folder)
   - [Resource Development](#resource-development)
     - [Get Sysinternals Suite](#get-sysinternals-suite)
@@ -99,8 +101,6 @@ Follow these steps to start the VirtualBox lab environment:
 Each lab session will involve extensive research and experimentation. You are encouraged to test any tools or methods you discover. However, exercise caution when using pre-built tools from online sources, as some may cause system instability. If you damage your VM, revert to the snapshot and start over.
 
 Further instructions will be provided at the beginning of each session. A team sync-up will occur at the end of each session to share ideas, successes, and failures.
-
-> **Tip:** If you become completely stuck, do not hesitate to ask for a hint.
 
 ![Login screen of Norman Luserov](.assets/norman_luserov.png)
 
@@ -243,6 +243,8 @@ These hosts represent the core environment we need to explore. The domain contro
 
 ### Identifying Potential Third-Party Services
 
+#### Through the UI
+
 We explored services to identify potential vulnerable or third-party services.
 
 1. **Open the Services Manager**:
@@ -266,17 +268,14 @@ By following these steps, we identified several non-default services that lack d
 
 > **Note:** Third-party services may or may not have a description. Just because a service has a description doesn’t mean it’s safe, and conversely, the absence of a description could indicate a non-standard service that might be exploitable.
 > **Tip:** Pay attention to services running under a named user account.
-> **Tip2:** If you get stuck on a big list of services and can't find a single clue, narrowing your search down might help you a littile bit
-use the followign command to identify services running from outside windows system32 directory
+
+#### Through CMD
+
+If you're faced with a long list of services and need to narrow down your search for third-party services, you can use the following command to find services running from outside the Windows System32 directory:
+
 ```bash
 wmic service get name,displayname,pathname | findstr /i /v "C:\\Windows\\System32\\"
 ```
-
-### Additional Tool: Autoruns
-
-If you have access to **Autoruns** from Sysinternals, you can use it to inspect abnormal services as well.
-### Scheduled Tasks in "Tasks Migrated" Folder
-**Autoruns**: This tool will show all services, scheduled tasks, startup programs, and more. It will highlight non-standard services that are automatically executed, helping you identify anything that looks suspicious or was recently added.
 
 ### Scheduled Tasks in "Tasks Migrated" Folder
 
