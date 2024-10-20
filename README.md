@@ -271,7 +271,7 @@ By following these steps, we identified several non-default services that lack d
 
 #### Through CMD
 
-If you're faced with a long list of services and need to narrow down your search for third-party services, you can use the following command to find services running from outside the Windows System32 directory:
+Services running from outside the Windows System32 directory are more likely to be third-party or non-standard, which could pose security risks. Use the following command to identify them:
 
 ```bash
 wmic service get name,displayname,pathname | findstr /i /v "C:\\Windows\\System32\\"
