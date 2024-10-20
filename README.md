@@ -266,8 +266,17 @@ By following these steps, we identified several non-default services that lack d
 
 > **Note:** Third-party services may or may not have a description. Just because a service has a description doesn’t mean it’s safe, and conversely, the absence of a description could indicate a non-standard service that might be exploitable.
 > **Tip:** Pay attention to services running under a named user account.
+> **Tip2:** If you get stuck on a big list of services and can't find a single clue, narrowing your search down might help you a littile bit
+use the followign command to identify services running from outside windows system32 directory
+```bash
+wmic service get name,displayname,pathname | findstr /i /v "C:\\Windows\\System32\\"
+```
 
-These services run with **Local System** privileges, presenting potential privilege escalation paths if vulnerabilities like unquoted service paths or weak permissions are present.
+### Additional Tool: Autoruns
+
+If you have access to **Autoruns** from Sysinternals, you can use it to inspect abnormal services as well.
+### Scheduled Tasks in "Tasks Migrated" Folder
+**Autoruns**: This tool will show all services, scheduled tasks, startup programs, and more. It will highlight non-standard services that are automatically executed, helping you identify anything that looks suspicious or was recently added.
 
 ### Scheduled Tasks in "Tasks Migrated" Folder
 
