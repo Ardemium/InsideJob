@@ -1011,7 +1011,7 @@ download, extract, and prepare **mimikatz**
    In **cmd**, use the `curl` command to download the file:
 
    ```bash
-   curl -o %USERPROFILE%\mimikatz.zip https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip
+   curl -L -o "%USERPROFILE%\mimikatz.zip" "https://github.com/gentilkiwi/mimikatz/releases/download/2.2.0-20220919/mimikatz_trunk.zip"
    ```
 
    In **PowerShell**, use `Invoke-WebRequest`:
