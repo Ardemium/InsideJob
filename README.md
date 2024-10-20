@@ -1,16 +1,10 @@
 # Inside Job
 
+★★★
 Please Star My Repository
-        .
-       ,O,
-      ,OOO,
-'oooooOOOOOooooo'
-  `OOOOOOOOOOO`
-    `OOOOOOO`
-    OOOO'OOOO
-   OOO'   'OOO
-  O'         'O
+★★★
 Hi! If you find this project helpful, please consider giving it a star. Your support is appreciated!
+★★★
 
 ![Inside Job](.assets/InsideJob.jpg)
 
