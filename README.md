@@ -185,9 +185,9 @@ We observe some key groups, such as:
 - **Executives**
 - **Office Admin**
 
-We also confirm that `chantalle.karol` and `domad` are part of the `Domain Admins` group, making them prime targets for credential theft or impersonation.
-
 ### Privilege Information
+
+We also confirm that `chantalle.karol` and `domad` are part of the `Domain Admins` group, making them prime targets for credential theft or impersonation.
 
 ```bash
 net group "domain admins" /domain
